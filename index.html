@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simple Real Estate — Listings & Inquiry</title>
+  <style>
+    /* ---------- Reset & base ---------- */
+    :root{
+      --accent:#0b72ff;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --bg:#f5f7fb;
+      --glass: rgba(255,255,255,0.7);
+      --radius:12px;
+      --max-width:1100px;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:#0f1724}
+    a{color:var(--accent);text-decoration:none}
+    img{max-width:100%;display:block;border-radius:8px}
+
+    /* ---------- Layout ---------- */
+    .wrap{max-width:var(--max-width);margin:32px auto;padding:24px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#2bd4ff);display:grid;place-items:center;color:white;font-weight:700}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    /* ---------- Hero search ---------- */
+    .hero{margin-top:18px;background:linear-gradient(180deg, rgba(11,114,255,0.07), transparent);padding:18px;border-radius:16px}
+    .search-row{display:flex;gap:12px;align-items:center}
+    .search-input{flex:1;padding:12px 14px;border-radius:10px;border:1px solid #e6e9ee;background:white}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+
+    /* ---------- Main layout with sidebar ---------- */
+    .main{display:grid;grid-template-columns:260px 1fr;gap:20px;margin-top:20px}
+    @media (max-width:880px){.main{grid-template-columns:1fr}.sidebar{order:2}}
+
+    /* ---------- Sidebar filters ---------- */
+    .card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:0 6px 18px rgba(15,23,36,0.06)}
+    .sidebar .section{margin-bottom:14px}
+    .section h3{margin:0 0 8px 0;font-size:14px}
+    .filters label{display:block;margin-bottom:8px;font-size:13px;color:var(--muted)}
+    .range-row{display:flex;gap:8px}
+    .compact{font-size:13px;color:var(--muted)}
+
+    /* ---------- Listings grid ---------- */
+    .listings{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    @media (max-width:1100px){.listings{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){.listings{grid-template-columns:1fr}}
+
+    .property{background:linear-gradient(180deg,var(--glass),white);border-radius:14px;padding:12px;border:1px solid rgba(15,23,36,0.04)}
+    .media{height:160px;border-radius:10px;overflow:hidden;margin-bottom:10px}
+    .meta{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .price{font-weight:700}
+    .info{font-size:13px;color:var(--muted);margin-top:6px}
+    .tags{display:flex;gap:8px;margin-top:8px}
+    .tag{font-size:12px;padding:6px 8px;border-radius:8px;background:#eef4ff;color:var(--accent)}
+
+    /* ---------- Inquiry button & modal (CSS only) ---------- */
+    .inquire-btn{display:inline-block;padding:8px 12px;border-radius:10px;border:1px solid rgba(11,114,255,0.12);background:rgba(11,114,255,0.06);cursor:pointer}
+    /* modal via :target */
+    .modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(2,6,23,0.45);padding:20px}
+    .modal:target{display:grid}
+    .modal-card{max-width:720px;background:white;padding:18px;border-radius:12px}
+    .modal-card h2{margin:0 0 6px 0}
+    .form-row{display:flex;gap:12px}
+    .form-row .col{flex:1}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ee}
+    textarea{min-height:110px}
+    .small{font-size:13px;color:var(--muted);margin-top:8px}
+
+    /* ---------- Footer ---------- */
+    footer{margin-top:26px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* tiny utilities */
+    .muted{color:var(--muted)}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">RE</div>
+        <div>
+          <h1>Horizon Properties</h1>
+          <p class="lead">Modern homes & trusted agents</p>
+        </div>
+      </div>
+      <nav class="muted">Contact: +91 98765 43210 · <a href="#inquiry">Enquire</a></nav>
+    </header>
+
+    <section class="hero card">
+      <form class="search-row" action="#" method="get">
+        <input class="search-input" type="search" name="q" placeholder="Search by city, neighbourhood or property ID" />
+        <select class="search-input" name="type" style="max-width:160px">
+          <option value="">Any type</option>
+          <option>Apartment</option>
+          <option>House</option>
+          <option>Villa</option>
+        </select>
+        <button class="btn" type="submit">Search</button>
+      </form>
+    </section>
+
+    <main class="main">
+      <aside class="sidebar">
+        <div class="card">
+          <div class="section">
+            <h3>Filters</h3>
+            <form class="filters" action="#" method="get">
+              <label><input type="checkbox" name="new" /> New Construction</label>
+              <label><input type="checkbox" name="furnished" /> Furnished</label>
+              <label class="compact">Beds</label>
+              <div class="range-row">
+                <select name="beds" style="width:100%">
+                  <option value="">Any</option>
+                  <option>1+</option>
+                  <option>2+</option>
+                  <option>3+</option>
+                </select>
+              </div>
+              <label class="compact">Price</label>
+              <div class="range-row">
+                <input name="min" placeholder="Min" />
+                <input name="max" placeholder="Max" />
+              </div>
+              <div style="margin-top:12px">
+                <button class="btn" type="submit">Apply</button>
+                <a href="#" style="margin-left:10px;color:var(--muted)">Reset</a>
+              </div>
+            </form>
+          </div>
+
+          <div class="section">
+            <h3>Quick Links</h3>
+            <div class="compact"><a href="#listings">All Listings</a></div>
+            <div class="compact"><a href="#inquiry">Contact Agent</a></div>
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <h2 style="margin:0">Featured Listings</h2>
+          <div class="muted">Showing <strong>9</strong> properties</div>
+        </div>
+
+        <div id="listings" class="listings">
+          <!-- Listing 1 -->
+          <article class="property">
+            <div class="media"><img alt="3BHK in Bangalore" src="https://aantarika.com/assets/img/blogs/3-bhk-flat-and-cost-in-bangalore.jpg"/></div>
+            <div class="meta"><div>
+              <div class="price">₹ 1.25 Cr</div>
+              <div class="muted">3 BHK · 1,400 sqft · Bangalore</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tag">Apartment</div>
+              <div style="margin-top:8px"><a class="inquire-btn" href="#inquiry">Inquire</a></div>
+            </div>
+            </div>
+            <div class="info">A bright, well ventilated 3BHK with balcony and parking. Close to schools and metro.</div>
+          </article>
+
+          <!-- Listing 2 -->
+          <article class="property">
+            <div class="media"><img alt="Cozy villa" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=60"/></div>
+            <div class="meta"><div>
+              <div class="price">₹ 2.8 Cr</div>
+              <div class="muted">4 BHK · 2,600 sqft · Goa</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tag">Villa</div>
+              <div style="margin-top:8px"><a class="inquire-btn" href="#inquiry">Inquire</a></div>
+            </div>
+            </div>
+            <div class="info">Sea-facing villa with garden and private parking. Ideal as a holiday home.</div>
+          </article>
+
+          <!-- Listing 3 -->
+          <article class="property">
+            <div class="media"><img alt="Modern house" src="https://images.livspace-cdn.com/w:1440/q:100/plain/https://d3gq2merok8n5r.cloudfront.net/abhinav/false-ceiling-homes-pilot-1660820004-eRVFP/hometour-1660820029-cuOHh/ht-in-lr-0025-1661187077-MnnLx/3-min-1661187103-gS15W.jpg"/></div>
+            <div class="meta"><div>
+              <div class="price">₹ 95 Lakh</div>
+              <div class="muted">2 BHK · 900 sqft · Pune</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tag">House</div>
+              <div style="margin-top:8px"><a class="inquire-btn" href="#inquiry">Inquire</a></div>
+            </div>
+            </div>
+            <div class="info">Cozy ground-floor home with modular kitchen and landscaped courtyard.</div>
+          </article>
+
+          <!-- Listing 4 -->
+          <article class="property">
+            <div class="media"><img alt="Studio" src="https://dyimg2.realestateindia.com/prop_images/2839678/1186798_9.jpg"/></div>
+            <div class="meta"><div>
+              <div class="price">₹ 42 Lakh</div>
+              <div class="muted">1 BHK · 420 sqft · Mumbai</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tag">Apartment</div>
+              <div style="margin-top:8px"><a class="inquire-btn" href="#inquiry">Inquire</a></div>
+            </div>
+            </div>
+            <div class="info">Compact studio near business district — perfect for young professionals.</div>
+          </article>
+
+          <!-- Listing 5 -->
+          <article class="property">
+            <div class="media"><img alt="Countryside house" src="https://www.propertiesguru.com/media/property/1775/building/img-20191121-wa0012.jpg"/></div>
+            <div class="meta"><div>
+              <div class="price">₹ 68 Lakh</div>
+              <div class="muted">3 BHK · 1,200 sqft · Dehradun</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tag">House</div>
+              <div style="margin-top:8px"><a class="inquire-btn" href="#inquiry">Inquire</a></div>
+            </div>
+            </div>
+            <div class="info">Peaceful neighbourhood, private terrace and easy access to highways.</div>
+          </article>
+
+          <!-- Listing 6 -->
+          <article class="property">
+            <div class="media"><img alt="Penthouse" src="https://www.themostexpensivehomes.com/wp-content/uploads/2016/12/This-Luxury-Penthouse-in-Burj-Khalifa-is-for-Sale-THE-MOST-EXPENSIVE-HOMES-5.jpg"/></div>
+            <div class="meta"><div>
+              <div class="price">₹ 4.5 Cr</div>
+              <div class="muted">5 BHK · 3,800 sqft · Delhi</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tag">Penthouse</div>
+              <div style="margin-top:8px"><a class="inquire-btn" href="#inquiry">Inquire</a></div>
+            </div>
+            </div>
+            <div class="info">Luxurious penthouse with panoramic city views and concierge amenities.</div>
+          </article>
+
+          <!-- Listing 7 -->
+          <article class="property">
+            <div class="media"><img alt="Townhome" src="https://images.livspace-cdn.com/w:1440/q:100/plain/https://d3gq2merok8n5r.cloudfront.net/abhinav/false-ceiling-homes-pilot-1660820004-eRVFP/hometour-1660820029-cuOHh/13-1661160189-KZQaZ/4-min-1661160205-5PCVX.jpg"/></div>
+            <div class="meta"><div>
+              <div class="price">₹ 1.1 Cr</div>
+              <div class="muted">3 BHK · 1,600 sqft · Chennai</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tag">Townhome</div>
+              <div style="margin-top:8px"><a class="inquire-btn" href="#inquiry">Inquire</a></div>
+            </div>
+            </div>
+            <div class="info">Modern townhome in gated community with pool and gym access.</div>
+          </article>
+
+          <!-- Listing 8 -->
+          <article class="property">
+            <div class="media"><img alt="Lakefront cottage" src="https://tse2.mm.bing.net/th/id/OIP.NY2HY3fwMQ9QlErkYyUoKgHaE7?rs=1&pid=ImgDetMain&o=7&rm=3"/></div>
+            <div class="meta"><div>
+              <div class="price">₹ 1.9 Cr</div>
+              <div class="muted">4 BHK · 2,200 sqft · Ooty</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tag">Cottage</div>
+              <div style="margin-top:8px"><a class="inquire-btn" href="#inquiry">Inquire</a></div>
+            </div>
+            </div>
+            <div class="info">Quaint lakefront cottage with large windows and beautifully landscaped garden.</div>
+          </article>
+
+          <!-- Listing 9 -->
+          <article class="property">
+            <div class="media"><img alt="Suburban home" src="https://lovehomedesigns.com/wp-content/uploads/2021/12/suburban-house-style-122221.jpg"/></div>
+            <div class="meta"><div>
+              <div class="price">₹ 82 Lakh</div>
+              <div class="muted">2 BHK · 850 sqft · Jaipur</div>
+            </div>
+            <div style="text-align:right">
+              <div class="tag">House</div>
+              <div style="margin-top:8px"><a class="inquire-btn" href="#inquiry">Inquire</a></div>
+            </div>
+            </div>
+            <div class="info">Well connected neighbourhood with parks and local markets nearby.</div>
+          </article>
+
+        </div>
+
+        <footer>
+          <p>Horizon Properties &middot; Built with basic HTML & CSS. <span class="muted">(No JavaScript required.)</span></p>
+        </footer>
+      </section>
+    </main>
+  </div>
+
+  <!-- Inquiry Modal (CSS-only) -->
+  <div id="inquiry" class="modal" aria-hidden="true">
+    <div class="modal-card card">
+      <a href="#" style="float:right;color:var(--muted);font-size:18px">✕</a>
+      <h2>Property Inquiry</h2>
+      <p class="small">Fill the form below and click <em>Send Email</em> — your email client will open.</p>
+      <form action="mailto:info@horizon.example.com" method="post" enctype="text/plain">
+        <div class="form-row" style="margin-top:12px">
+          <div class="col"><input name="name" placeholder="Your name" required /></div>
+          <div class="col"><input name="phone" placeholder="Phone number" required /></div>
+        </div>
+        <div style="margin-top:10px"><input name="email" placeholder="Email address" required /></div>
+        <div style="margin-top:10px"><select name="property"><option>Property ID / Title (optional)</option><option>₹ 1.25 Cr — Bangalore 3BHK</option><option>₹ 2.8 Cr — Goa Villa</option></select></div>
+        <div style="margin-top:10px"><textarea name="message" placeholder="Your message, budget, best time to contact"></textarea></div>
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+          <button class="btn" type="submit">Send Email</button>
+          <a href="#" style="color:var(--muted)">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
